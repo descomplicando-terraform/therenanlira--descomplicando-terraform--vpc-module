@@ -8,6 +8,11 @@ variable "environment" {
   type        = string
 }
 
+variable "default_tags" {
+  description = "The default tags for the VPC"
+  type        = map(string)
+}
+
 variable "azs_count" {
   description = "The number of availability zones"
   type        = number

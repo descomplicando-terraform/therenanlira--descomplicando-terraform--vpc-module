@@ -7,10 +7,13 @@ resource "aws_subnet" "private_subnet" {
 
   map_public_ip_on_launch = false
 
-  tags = {
-    Name     = "${var.environment}--private-subnet--${data.aws_availability_zones.available.names[count.index]}"
-    Resource = "vpc.private-subnet"
-  }
+  tags = merge(
+    var.default_tags,
+    {
+      Name     = "${var.environment}--private-subnet--${data.aws_availability_zones.available.names[count.index]}"
+      Resource = "vpc.private-subnet"
+    }
+  )
 }
 
 resource "aws_subnet" "public_subnet" {
@@ -22,8 +25,11 @@ resource "aws_subnet" "public_subnet" {
 
   map_public_ip_on_launch = false
 
-  tags = {
-    Name     = "${var.environment}--public-subnet--${data.aws_availability_zones.available.names[count.index]}"
-    Resource = "vpc.public-subnet"
-  }
+  tags = merge(
+    var.default_tags,
+    {
+      Name     = "${var.environment}--public-subnet--${data.aws_availability_zones.available.names[count.index]}"
+      Resource = "vpc.public-subnet"
+    }
+  )
 }

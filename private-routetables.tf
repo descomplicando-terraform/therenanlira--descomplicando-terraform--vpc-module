@@ -24,10 +24,13 @@ resource "aws_route_table" "private_internet_access" {
     egress_only_gateway_id = aws_egress_only_internet_gateway.egress_only_internet_gateway.id
   }
 
-  tags = {
-    Name     = "${var.environment}--private-route-table--${data.aws_availability_zones.available.names[count.index]}"
-    Resource = "vpc.private-route-table"
-  }
+  tags = merge(
+    var.default_tags,
+    {
+      Name     = "${var.environment}--private-route-table--${data.aws_availability_zones.available.names[count.index]}"
+      Resource = "vpc.private-route-table"
+    }
+  )
 }
 
 resource "aws_route_table_association" "private_subnet_association" {

@@ -21,10 +21,13 @@ resource "aws_iam_role" "flow_logs_role" {
     }]
   })
 
-  tags = {
-    Name     = "${var.environment}--flow-logs-role"
-    Resource = "vpc.flow-logs-role"
-  }
+  tags = merge(
+    var.default_tags,
+    {
+      Name     = "${var.environment}--flow-logs-role"
+      Resource = "vpc.flow-logs-role"
+    }
+  )
 }
 
 resource "aws_iam_policy" "flow_logs_policy" {
@@ -50,10 +53,13 @@ resource "aws_iam_policy" "flow_logs_policy" {
     ]
   })
 
-  tags = {
-    Name     = "${var.environment}--flow-logs-policy"
-    Resource = "vpc.flow-logs-policy"
-  }
+  tags = merge(
+    var.default_tags,
+    {
+      Name     = "${var.environment}--flow-logs-policy"
+      Resource = "vpc.flow-logs-policy"
+    }
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "flow_logs_role_policy_attachment" {
