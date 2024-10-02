@@ -29,13 +29,18 @@ variable "single_nat_gateway" {
   default     = false
 }
 
-variable "vpc_cidr" {
+variable "vpc_cidr_block" {
   description = "The CIDR block for the VPC"
   type        = string
-  default     = "10.0.0.0"
+
   validation {
-    condition     = can(regex("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$", var.vpc_cidr))
-    error_message = "The CIDR block must be in the format x.x.x.x"
+    condition     = can(regex("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.vpc_cidr_block))
+    error_message = "The CIDR block must be in the format x.x.x.x/xx"
+  }
+
+  validation {
+    condition     = split("/", var.vpc_cidr_block)[1] == "16"
+    error_message = "The mask must be /16"
   }
 }
 
