@@ -16,15 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up Terraform
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Set up Terraform 1.9.5
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.9.5
 
-    - name: Initialize Terraform
+    - name: Terraform Init
       run: terraform init
 
-    - name: Validate Terraform
+    - name: Terraform Validate
       run: terraform validate
