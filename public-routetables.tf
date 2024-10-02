@@ -13,10 +13,13 @@ resource "aws_route_table" "public_internet_access" {
     egress_only_gateway_id = aws_egress_only_internet_gateway.egress_only_internet_gateway.id
   }
 
-  tags = {
-    Name     = "${var.environment}--public-route-table--${data.aws_availability_zones.available.names[count.index]}"
-    Resource = "vpc.public-route-table"
-  }
+  tags = merge(
+    var.default_tags,
+    {
+      Name     = "${var.environment}--public-route-table--${data.aws_availability_zones.available.names[count.index]}"
+      Resource = "vpc.public-route-table"
+    }
+  )
 }
 
 resource "aws_route_table_association" "public_subnet_association" {

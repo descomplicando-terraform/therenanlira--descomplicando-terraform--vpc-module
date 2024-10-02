@@ -8,8 +8,11 @@ resource "aws_vpc" "vpc" {
 
   assign_generated_ipv6_cidr_block = var.enable_ipv6
 
-  tags = {
-    Name     = "${var.environment}--vpc"
-    Resource = "vpc"
-  }
+  tags = merge(
+    var.default_tags,
+    {
+      Name     = "${var.environment}--vpc"
+      Resource = "vpc"
+    }
+  )
 }
