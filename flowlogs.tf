@@ -3,23 +3,28 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   count = var.enable_flow_logs ? 1 : 0
   name  = "/aws/vpc/flow-logs"
 
-  retention_in_days = 7
+  retention_in_days = var.flow_logs_retention_in_days
+}
+
+data "aws_iam_policy_document" "flow_logs_assume_role_policy" {
+  count = var.enable_flow_logs ? 1 : 0
+
+  statement {
+    actions = ["sts:AssumeRole"]
+    effect  = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+  }
 }
 
 resource "aws_iam_role" "flow_logs_role" {
   count = var.enable_flow_logs ? 1 : 0
   name  = "${var.environment}--flow-logs-role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "vpc-flow-logs.amazonaws.com"
-      }
-    }]
-  })
+  assume_role_policy = data.aws_iam_policy_document.flow_logs_assume_role_policy[count.index].json
 
   tags = merge(
     var.default_tags,
@@ -30,28 +35,30 @@ resource "aws_iam_role" "flow_logs_role" {
   )
 }
 
+data "aws_iam_policy_document" "flow_logs_policy" {
+  count = var.enable_flow_logs ? 1 : 0
+
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams"
+    ]
+    effect = "Allow"
+
+    resources = [
+      aws_cloudwatch_log_group.vpc_flow_logs[0].arn
+    ]
+  }
+}
+
 resource "aws_iam_policy" "flow_logs_policy" {
   count = var.enable_flow_logs ? 1 : 0
   name  = "${var.environment}--flow-logs-policy"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "logs:DescribeLogGroups",
-          "logs:DescribeLogStreams"
-        ]
-        Resource = [
-          aws_cloudwatch_log_group.vpc_flow_logs[0].arn
-        ]
-      }
-    ]
-  })
+  policy = data.aws_iam_policy_document.flow_logs_policy[count.index].json
 
   tags = merge(
     var.default_tags,
