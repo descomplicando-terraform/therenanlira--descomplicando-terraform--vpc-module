@@ -28,3 +28,9 @@ jobs:
 
     - name: Terraform Validate
       run: terraform validate
+
+    - name: Terraform Format Check
+      run: terraform fmt -check
+
+    - name: Terraform Sec
+      uses: aquasecurity/tfsec-action@v1.0.3          
