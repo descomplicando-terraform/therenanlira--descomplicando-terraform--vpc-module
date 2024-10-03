@@ -55,3 +55,9 @@ variable "enable_flow_logs" {
   type        = bool
   default     = false
 }
+
+variable "flow_logs_retention_in_days" {
+  description = "The retention in days for the flow logs"
+  type        = number
+  default     = 7
+}
